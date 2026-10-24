@@ -1,0 +1,1092 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>P1 English - Past Tense Time Travel Adventure</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Fredoka & Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              fredoka: ['Fredoka', 'sans-serif'],
+              sans: ['Inter', 'sans-serif'],
+            },
+            colors: {
+              brandYellow: '#FFD166',
+              brandPink: '#FF70A6',
+              brandPurple: '#70D6FF',
+              brandGreen: '#06D6A0',
+              brandDark: '#26547C',
+            }
+          }
+        }
+      }
+    </script>
+    
+    <style>
+      body {
+        font-family: 'Fredoka', sans-serif;
+        background: linear-gradient(135deg, #e0f2fe 0%, #f0f9ff 100%);
+        user-select: none;
+      }
+      .bouncy-btn {
+        transition: transform 0.15s ease, box-shadow 0.15s ease;
+      }
+      .bouncy-btn:hover {
+        transform: translateY(-3px) scale(1.02);
+        box-shadow: 0 10px 20px -5px rgba(0, 0, 0, 0.15);
+      }
+      .bouncy-btn:active {
+        transform: translateY(1px) scale(0.98);
+      }
+      .card-flip-inner {
+        transition: transform 0.6s;
+        transform-style: preserve-3d;
+      }
+      .card-flip.flipped .card-flip-inner {
+        transform: rotateY(180deg);
+      }
+      .card-front, .card-back {
+        backface-visibility: hidden;
+      }
+      .card-back {
+        transform: rotateY(180deg);
+      }
+      @keyframes floatSlow {
+        0%, 100% { transform: translateY(0px) rotate(0deg); }
+        50% { transform: translateY(-8px) rotate(2deg); }
+      }
+      .animate-float {
+        animation: floatSlow 3s ease-in-out infinite;
+      }
+      @keyframes pulseGlow {
+        0%, 100% { box-shadow: 0 0 15px rgba(112, 214, 255, 0.4); }
+        50% { box-shadow: 0 0 25px rgba(112, 214, 255, 0.8); }
+      }
+      .pulse-glow {
+        animation: pulseGlow 2s infinite;
+      }
+    </style>
+</head>
+<body class="min-h-screen text-slate-800 flex flex-col justify-between p-2 md:p-4">
+
+    <!-- CONFIGURATION & APP HEADER -->
+    <script>
+      // TEACHER CONFIGURATION: Paste your Google Apps Script Web App URL here
+      const GOOGLE_APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwfkHZNhsUUZw8vAXM589bYdsgPZeX10KK5PdOmj6MhvAc9V6Tum6anSEIXzXcbFrPA/exec"; // e.g. "https://script.google.com/macros/s/.../exec"
+    </script>
+
+    <!-- TOP CONTROL BAR -->
+    <header class="w-full max-w-5xl mx-auto bg-white/90 backdrop-blur border-2 border-sky-200 rounded-2xl p-3 mb-3 shadow-sm flex flex-wrap items-center justify-between gap-2">
+      <div class="flex items-center gap-3">
+        <span class="text-3xl animate-bounce">⏳</span>
+        <div>
+          <h1 class="text-xl md:text-2xl font-bold text-sky-700 tracking-wide">P1 Past Tense Fun!</h1>
+          <p class="text-xs text-sky-600 font-sans font-semibold">Primary 1 English Game</p>
+        </div>
+      </div>
+
+      <!-- User Info & Controls -->
+      <div class="flex items-center gap-2 flex-wrap">
+        <!-- TTS Toggle Button -->
+        <button id="ttsToggleBtn" onclick="toggleTTS()" class="bg-amber-100 border-2 border-amber-300 text-amber-800 text-sm px-3 py-1.5 rounded-xl flex items-center gap-1.5 font-bold hover:bg-amber-200 transition">
+          <i id="ttsIcon" class="fas fa-volume-up text-amber-600"></i>
+          <span id="ttsText">Read Aloud: ON</span>
+        </button>
+
+        <!-- Live Difficulty Switcher (In Game) -->
+        <div id="diffSwitchContainer" class="hidden">
+          <select id="gameDiffSelect" onchange="switchDifficultyMidGame(this.value)" class="bg-indigo-50 border-2 border-indigo-300 text-indigo-800 text-sm px-2 py-1.5 rounded-xl font-bold focus:outline-none">
+            <option value="easy">Level 1: Easy</option>
+            <option value="medium" selected>Level 2: Medium</option>
+            <option value="hard">Level 3: Hard</option>
+            <option value="challenge">Level 4: Super Hard</option>
+          </select>
+        </div>
+
+        <button onclick="showLeaderboardModal()" class="bg-purple-100 border-2 border-purple-300 text-purple-800 text-sm px-3 py-1.5 rounded-xl flex items-center gap-1 font-bold hover:bg-purple-200 transition">
+          <i class="fas fa-trophy text-purple-600"></i> Star Board
+        </button>
+      </div>
+    </header>
+
+    <!-- MAIN APP CONTAINER -->
+    <main class="w-full max-w-5xl mx-auto flex-1 flex flex-col justify-center items-center">
+      
+      <!-- SCREEN 1: LOGIN / AVATAR SELECTION (STATIONARY BOX TO PREVENT DIZZINESS) -->
+      <section id="loginScreen" class="w-full bg-white border-4 border-sky-300 rounded-3xl p-6 md:p-10 shadow-xl text-center max-w-xl">
+        <div class="inline-block bg-sky-100 px-4 py-1.5 rounded-full text-sky-700 font-bold text-sm mb-4">
+          <i class="fas fa-smile mr-1"></i> Welcome Friend!
+        </div>
+        <h2 class="text-3xl md:text-4xl font-extrabold text-sky-800 mb-2">Let's Learn English!</h2>
+        <p class="text-gray-600 font-sans mb-6">Type your name and class to start playing!</p>
+
+        <form onsubmit="handleLogin(event)" class="space-y-4 text-left">
+          <div>
+            <label class="block text-sky-800 font-bold text-sm mb-1" for="studentName"><i class="fas fa-user text-sky-500 mr-1"></i> Your Name:</label>
+            <input type="text" id="studentName" required placeholder="e.g. Ali / Siti" class="w-full text-lg p-3 border-2 border-sky-200 rounded-2xl focus:border-sky-500 focus:outline-none font-sans">
+          </div>
+
+          <div>
+            <label class="block text-sky-800 font-bold text-sm mb-1" for="studentClass"><i class="fas fa-school text-sky-500 mr-1"></i> Your Class:</label>
+            <input type="text" id="studentClass" required placeholder="e.g. 1 Commitment / 1A" class="w-full text-lg p-3 border-2 border-sky-200 rounded-2xl focus:border-sky-500 focus:outline-none font-sans">
+          </div>
+
+          <!-- Avatar Choice -->
+          <div>
+            <label class="block text-sky-800 font-bold text-sm mb-2"><i class="fas fa-smile text-sky-500 mr-1"></i> Pick a Helper:</label>
+            <div class="grid grid-cols-4 gap-3">
+              <button type="button" onclick="selectAvatar('🐱')" class="avatar-opt text-3xl p-2 rounded-2xl border-2 border-slate-200 hover:border-sky-400 bg-sky-50 transition active-avatar">🐱</button>
+              <button type="button" onclick="selectAvatar('🤖')" class="avatar-opt text-3xl p-2 rounded-2xl border-2 border-slate-200 hover:border-sky-400 bg-sky-50 transition">🤖</button>
+              <button type="button" onclick="selectAvatar('🚀')" class="avatar-opt text-3xl p-2 rounded-2xl border-2 border-slate-200 hover:border-sky-400 bg-sky-50 transition">🚀</button>
+              <button type="button" onclick="selectAvatar('🦄')" class="avatar-opt text-3xl p-2 rounded-2xl border-2 border-slate-200 hover:border-sky-400 bg-sky-50 transition">🦄</button>
+            </div>
+          </div>
+
+          <button type="submit" class="w-full mt-6 bg-emerald-400 hover:bg-emerald-500 text-white font-extrabold text-xl py-4 rounded-2xl shadow-lg bouncy-btn border-b-4 border-emerald-600 flex items-center justify-center gap-2">
+            <span>START NOW!</span> <i class="fas fa-arrow-right"></i>
+          </button>
+        </form>
+      </section>
+
+      <!-- SCREEN 2: MODE SELECTOR -->
+      <section id="modeSelectScreen" class="hidden w-full max-w-3xl text-center space-y-6">
+        <div class="bg-amber-100 border-2 border-amber-300 p-4 rounded-2xl text-amber-900 flex items-center justify-between">
+          <span class="font-bold text-lg" id="welcomeUserGreeting">Hello Student!</span>
+          <span class="bg-amber-200 text-amber-800 text-xs px-3 py-1 rounded-full font-bold">P1 English</span>
+        </div>
+
+        <h2 class="text-3xl font-extrabold text-sky-900">What do you want to do?</h2>
+
+        <div class="grid md:grid-cols-2 gap-6">
+          <!-- Option 1: Learning Deck -->
+          <div onclick="startLearningDeck()" class="bg-white border-4 border-sky-300 p-6 rounded-3xl shadow-xl hover:border-sky-500 cursor-pointer transition transform hover:-translate-y-1 text-center group">
+            <div class="text-6xl mb-3 group-hover:scale-110 transition">📖</div>
+            <h3 class="text-2xl font-bold text-sky-800 mb-2">Learn Rules</h3>
+            <p class="text-gray-600 text-sm font-sans mb-4">Learn easy past tense rules with fun pictures and sounds!</p>
+            <span class="inline-block bg-sky-500 text-white px-5 py-2 rounded-xl font-bold group-hover:bg-sky-600 transition">Read Rules <i class="fas fa-book-open ml-1"></i></span>
+          </div>
+
+          <!-- Option 2: Practice Game -->
+          <div onclick="startPracticeGame()" class="bg-white border-4 border-emerald-300 p-6 rounded-3xl shadow-xl hover:border-emerald-500 cursor-pointer transition transform hover:-translate-y-1 text-center group">
+            <div class="text-6xl mb-3 group-hover:scale-110 transition">🎮</div>
+            <h3 class="text-2xl font-bold text-emerald-800 mb-2">Play Game</h3>
+            <p class="text-gray-600 text-sm font-sans mb-4">Answer questions, win stars, and try your best!</p>
+            <span class="inline-block bg-emerald-500 text-white px-5 py-2 rounded-xl font-bold group-hover:bg-emerald-600 transition">Play Game <i class="fas fa-play ml-1"></i></span>
+          </div>
+        </div>
+      </section>
+
+      <!-- SCREEN 3: INTERACTIVE LEARNING DECK -->
+      <section id="learningDeckScreen" class="hidden w-full bg-white border-4 border-sky-300 rounded-3xl p-6 md:p-8 shadow-2xl relative min-h-[500px] flex flex-col justify-between">
+        
+        <!-- Deck Header & Progress -->
+        <div class="flex items-center justify-between border-b-2 border-sky-100 pb-3 mb-4">
+          <div class="flex items-center gap-2">
+            <button onclick="showModeSelect()" class="text-sky-600 hover:text-sky-800 text-sm font-bold bg-sky-50 px-3 py-1 rounded-xl">
+              <i class="fas fa-home"></i> Home
+            </button>
+            <span class="text-sm font-bold text-sky-700" id="slideIndicator">Page 1 of 6</span>
+          </div>
+
+          <!-- Visual Progress Dots -->
+          <div class="flex gap-1.5" id="slideDots"></div>
+
+          <button onclick="speakCurrentSlide()" class="text-amber-600 hover:text-amber-700 bg-amber-50 px-3 py-1 rounded-xl text-sm font-bold">
+            <i class="fas fa-volume-up mr-1"></i> Read Page
+          </button>
+        </div>
+
+        <!-- Dynamic Slide Content Area -->
+        <div id="slideContent" class="flex-1 flex flex-col items-center justify-center text-center p-2">
+          <!-- Content rendered via JavaScript -->
+        </div>
+
+        <!-- Deck Navigation Controls -->
+        <div class="flex items-center justify-between border-t-2 border-sky-100 pt-4 mt-4">
+          <button id="prevSlideBtn" onclick="changeSlide(-1)" class="bg-gray-200 text-gray-700 px-5 py-2.5 rounded-2xl font-bold hover:bg-gray-300 disabled:opacity-40">
+            <i class="fas fa-arrow-left mr-1"></i> Back
+          </button>
+
+          <button onclick="startPracticeGameFromDeck()" class="bg-emerald-500 text-white px-5 py-2.5 rounded-2xl font-bold hover:bg-emerald-600 bouncy-btn shadow-md">
+            Go to Game 🎮
+          </button>
+
+          <button id="nextSlideBtn" onclick="changeSlide(1)" class="bg-sky-500 text-white px-6 py-2.5 rounded-2xl font-bold hover:bg-sky-600 bouncy-btn shadow-md">
+            Next <i class="fas fa-arrow-right ml-1"></i>
+          </button>
+        </div>
+      </section>
+
+      <!-- SCREEN 4: PRACTICE GAME -->
+      <section id="gameScreen" class="hidden w-full bg-white border-4 border-indigo-300 rounded-3xl p-6 md:p-8 shadow-2xl relative">
+        
+        <!-- HUD Header -->
+        <div class="flex flex-wrap items-center justify-between bg-indigo-50 border-2 border-indigo-200 rounded-2xl p-3 mb-6 gap-2">
+          <!-- Time & Streak -->
+          <div class="flex items-center gap-4">
+            <div class="flex items-center gap-1.5 text-amber-600 font-extrabold text-lg">
+              <i class="fas fa-fire text-amber-500 text-2xl"></i>
+              <span>Combo: <span id="gameStreak">0</span></span>
+            </div>
+            <div class="flex items-center gap-1.5 text-indigo-700 font-extrabold text-lg">
+              <i class="fas fa-star text-yellow-400 text-2xl"></i>
+              <span>Stars: <span id="gameScore">0</span></span>
+            </div>
+          </div>
+
+          <!-- Timer Bar -->
+          <div class="flex items-center gap-2 flex-1 max-w-xs mx-2">
+            <i class="fas fa-clock text-indigo-500"></i>
+            <div class="w-full bg-indigo-200 rounded-full h-4 overflow-hidden border border-indigo-300">
+              <div id="timerBar" class="bg-indigo-600 h-full w-full transition-all duration-1000"></div>
+            </div>
+          </div>
+
+          <!-- Question Counter -->
+          <div class="text-sm font-bold text-indigo-800 bg-white px-3 py-1 rounded-xl border border-indigo-200">
+            Question <span id="qCurrent">1</span> of <span id="qTotal">10</span>
+          </div>
+        </div>
+
+        <!-- Question Card -->
+        <div class="text-center space-y-4">
+          <div class="inline-block bg-indigo-100 text-indigo-800 font-bold px-4 py-1 rounded-full text-xs uppercase tracking-wider" id="qRuleTag">
+            Grammar Rule
+          </div>
+
+          <!-- Prompt Display -->
+          <div class="p-4 bg-slate-50 border-2 border-slate-200 rounded-2xl min-h-[100px] flex items-center justify-center">
+            <h3 id="questionPrompt" class="text-2xl md:text-3xl font-extrabold text-slate-800 leading-relaxed">
+              Loading Question...
+            </h3>
+          </div>
+
+          <!-- Read Question Audio Button -->
+          <button onclick="speakQuestion()" class="inline-flex items-center gap-1.5 text-xs bg-amber-100 text-amber-800 font-bold px-3 py-1.5 rounded-full hover:bg-amber-200 transition">
+            <i class="fas fa-volume-up"></i> Listen to Question
+          </button>
+
+          <!-- TYPED TEXT INPUT FOR PRACTICE GAME -->
+          <form onsubmit="handleTypedAnswerSubmit(event)" class="mt-6 space-y-4 max-w-md mx-auto">
+            <div class="relative flex items-center justify-center">
+              <input 
+                type="text" 
+                id="typedAnswerInput" 
+                autocomplete="off" 
+                autocorrect="off" 
+                autocapitalize="off" 
+                spellcheck="false"
+                placeholder="Type your answer here..." 
+                class="w-full text-center text-2xl md:text-3xl font-extrabold tracking-wide py-3 px-4 rounded-2xl border-4 border-indigo-300 focus:border-indigo-500 focus:outline-none shadow-inner bg-indigo-50/50 text-indigo-900 placeholder:text-indigo-300 placeholder:font-normal placeholder:text-lg"
+              >
+            </div>
+
+            <!-- Quick Suffix Helper Chips for Young Learners -->
+            <div class="flex items-center justify-center gap-2 flex-wrap">
+              <span class="text-xs text-slate-500 font-sans font-semibold">Helper taps:</span>
+              <button type="button" onclick="appendSuffix('ed')" class="text-xs bg-amber-100 border border-amber-300 text-amber-800 font-extrabold px-2.5 py-1 rounded-lg hover:bg-amber-200 active:scale-95 transition">+ed</button>
+              <button type="button" onclick="appendSuffix('d')" class="text-xs bg-amber-100 border border-amber-300 text-amber-800 font-extrabold px-2.5 py-1 rounded-lg hover:bg-amber-200 active:scale-95 transition">+d</button>
+              <button type="button" onclick="appendSuffix('ied')" class="text-xs bg-amber-100 border border-amber-300 text-amber-800 font-extrabold px-2.5 py-1 rounded-lg hover:bg-amber-200 active:scale-95 transition">+ied</button>
+            </div>
+
+            <button type="submit" id="submitAnswerBtn" class="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-extrabold text-xl py-3 rounded-2xl shadow-lg bouncy-btn border-b-4 border-emerald-700 flex items-center justify-center gap-2 transition">
+              <span>CHECK ANSWER</span> <i class="fas fa-check"></i>
+            </button>
+          </form>
+
+          <!-- Socratic Feedback Box -->
+          <div id="socraticFeedback" class="hidden p-4 rounded-2xl border-2 text-left font-sans text-sm animate-bounce">
+            <!-- Hint rendered dynamically -->
+          </div>
+        </div>
+
+      </section>
+
+      <!-- SCREEN 5: END REPORT & REFLECTION -->
+      <section id="resultScreen" class="hidden w-full max-w-2xl bg-white border-4 border-emerald-400 rounded-3xl p-6 md:p-8 shadow-2xl text-center space-y-6">
+        <div class="text-6xl animate-bounce">🏆</div>
+        <h2 class="text-3xl md:text-4xl font-extrabold text-emerald-800">You Did It! Great Job!</h2>
+        
+        <div class="bg-emerald-50 border-2 border-emerald-200 rounded-2xl p-4 grid grid-cols-3 gap-2">
+          <div>
+            <p class="text-xs text-emerald-600 font-bold font-sans">FINAL STARS</p>
+            <p id="resScore" class="text-3xl font-extrabold text-emerald-800">0</p>
+          </div>
+          <div>
+            <p class="text-xs text-emerald-600 font-bold font-sans">BEST COMBO</p>
+            <p id="resStreak" class="text-3xl font-extrabold text-amber-600">0</p>
+          </div>
+          <div>
+            <p class="text-xs text-emerald-600 font-bold font-sans">CORRECT</p>
+            <p id="resAccuracy" class="text-3xl font-extrabold text-sky-700">0%</p>
+          </div>
+        </div>
+
+        <div class="bg-amber-50 border-2 border-amber-300 rounded-2xl p-4 text-left">
+          <h4 class="font-bold text-amber-900 text-base mb-2 flex items-center gap-2">
+            <i class="fas fa-brain text-amber-600"></i> Thinking Time:
+          </h4>
+          <p class="text-xs text-amber-800 font-sans mb-3">Which word rule was easy for you today?</p>
+          <textarea id="studentReflection" placeholder="e.g. Adding -ed to words like walk -> walked!" class="w-full text-xs p-3 rounded-xl border border-amber-200 focus:outline-none focus:border-amber-400 font-sans" rows="2"></textarea>
+        </div>
+
+        <div class="flex flex-wrap items-center justify-center gap-4">
+          <button onclick="replayGame()" class="bg-emerald-500 hover:bg-emerald-600 text-white font-bold text-lg px-6 py-3 rounded-2xl shadow-lg bouncy-btn">
+            <i class="fas fa-redo mr-1"></i> Play Again
+          </button>
+          <button onclick="showLeaderboardModal()" class="bg-purple-500 hover:bg-purple-600 text-white font-bold text-lg px-6 py-3 rounded-2xl shadow-lg bouncy-btn">
+            <i class="fas fa-trophy mr-1"></i> See Stars
+          </button>
+          <button onclick="showModeSelect()" class="bg-sky-500 hover:bg-sky-600 text-white font-bold text-lg px-6 py-3 rounded-2xl shadow-lg bouncy-btn">
+            <i class="fas fa-home mr-1"></i> Main Menu
+          </button>
+        </div>
+      </section>
+
+    </main>
+
+    <!-- LEADERBOARD MODAL -->
+    <div id="leaderboardModal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+      <div class="bg-white border-4 border-purple-400 rounded-3xl max-w-lg w-full p-6 shadow-2xl relative flex flex-col max-h-[90vh]">
+        <button onclick="closeLeaderboardModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 text-2xl font-bold">
+          &times;
+        </button>
+
+        <div class="text-center mb-4">
+          <h3 class="text-2xl font-extrabold text-purple-800"><i class="fas fa-crown text-yellow-400 mr-1"></i> Class Star Board</h3>
+          <p class="text-xs text-slate-500 font-sans">See who scored high!</p>
+        </div>
+
+        <div class="overflow-y-auto flex-1 border-2 border-slate-100 rounded-2xl p-2 space-y-2" id="leaderboardList">
+          <div class="text-center py-8 text-slate-400 font-sans text-sm">
+            <i class="fas fa-spinner fa-spin text-2xl mb-2"></i>
+            <p>Loading star board...</p>
+          </div>
+        </div>
+
+        <button onclick="closeLeaderboardModal()" class="mt-4 w-full bg-purple-600 text-white font-bold py-3 rounded-2xl bouncy-btn">
+          Back to Game
+        </button>
+      </div>
+    </div>
+
+    <!-- AUDIO ENGINE & APPLICATION JAVASCRIPT -->
+    <script>
+      /* ==========================================================================
+         1. AUDIO ENGINE (Web Audio API & Web Speech API TTS)
+         ========================================================================== */
+      let audioCtx = null;
+      let ttsEnabled = true;
+
+      function initAudioContext() {
+        if (!audioCtx) {
+          audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        }
+      }
+
+      // Synthesized Sound Effects
+      function playSFX(type) {
+        try {
+          initAudioContext();
+          if (audioCtx.state === 'suspended') {
+            audioCtx.resume();
+          }
+
+          const osc = audioCtx.createOscillator();
+          const gain = audioCtx.createGain();
+          osc.connect(gain);
+          gain.connect(audioCtx.destination);
+
+          const now = audioCtx.currentTime;
+
+          if (type === 'click') {
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(400, now);
+            osc.frequency.exponentialRampToValueAtTime(800, now + 0.05);
+            gain.gain.setValueAtTime(0.15, now);
+            gain.gain.linearRampToValueAtTime(0, now + 0.05);
+            osc.start(now);
+            osc.stop(now + 0.05);
+          } else if (type === 'correct') {
+            // Chime / Fanfare
+            osc.type = 'triangle';
+            osc.frequency.setValueAtTime(523.25, now); // C5
+            osc.frequency.setValueAtTime(659.25, now + 0.08); // E5
+            osc.frequency.setValueAtTime(783.99, now + 0.16); // G5
+            osc.frequency.setValueAtTime(1046.50, now + 0.24); // C6
+            gain.gain.setValueAtTime(0.2, now);
+            gain.gain.exponentialRampToValueAtTime(0.01, now + 0.5);
+            osc.start(now);
+            osc.stop(now + 0.5);
+          } else if (type === 'wrong') {
+            // Gentle retry sound
+            osc.type = 'sawtooth';
+            osc.frequency.setValueAtTime(220, now);
+            osc.frequency.linearRampToValueAtTime(180, now + 0.2);
+            gain.gain.setValueAtTime(0.15, now);
+            gain.gain.linearRampToValueAtTime(0.01, now + 0.25);
+            osc.start(now);
+            osc.stop(now + 0.25);
+          } else if (type === 'flip') {
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(300, now);
+            osc.frequency.exponentialRampToValueAtTime(600, now + 0.08);
+            gain.gain.setValueAtTime(0.1, now);
+            gain.gain.linearRampToValueAtTime(0, now + 0.08);
+            osc.start(now);
+            osc.stop(now + 0.08);
+          }
+        } catch (e) {
+          console.log("Audio not allowed yet", e);
+        }
+      }
+
+      // Toggle Speech Synthesizer
+      function toggleTTS() {
+        ttsEnabled = !ttsEnabled;
+        const icon = document.getElementById('ttsIcon');
+        const text = document.getElementById('ttsText');
+        const btn = document.getElementById('ttsToggleBtn');
+
+        if (ttsEnabled) {
+          icon.className = 'fas fa-volume-up text-amber-600';
+          text.textContent = 'Read Aloud: ON';
+          btn.className = 'bg-amber-100 border-2 border-amber-300 text-amber-800 text-sm px-3 py-1.5 rounded-xl flex items-center gap-1.5 font-bold hover:bg-amber-200 transition';
+          speakTTS("Audio read aloud is now enabled!");
+        } else {
+          window.speechSynthesis.cancel();
+          icon.className = 'fas fa-volume-mute text-gray-500';
+          text.textContent = 'Read Aloud: OFF';
+          btn.className = 'bg-gray-100 border-2 border-gray-300 text-gray-600 text-sm px-3 py-1.5 rounded-xl flex items-center gap-1.5 font-bold hover:bg-gray-200 transition';
+        }
+      }
+
+      // MANDATORY BLANK PRONUNCIATION ENGINE
+      function speakTTS(textToRead) {
+        if (!ttsEnabled || !('speechSynthesis' in window)) return;
+
+        window.speechSynthesis.cancel(); // Stop ongoing speech
+
+        // Replace underscores/blanks e.g. "_____" or "___" with natural word "blank"
+        let sanitizedText = textToRead.replace(/_+/g, ' blank ');
+
+        const utterance = new SpeechSynthesisUtterance(sanitizedText);
+        utterance.rate = 0.85; // Natural speed for P1 children
+        utterance.pitch = 1.05; // Friendly tone
+        utterance.lang = 'en-SG'; // Singapore/English locale preference
+
+        window.speechSynthesis.speak(utterance);
+      }
+
+      /* ==========================================================================
+         2. STATE & USER DATA
+         ========================================================================== */
+      let currentUser = {
+        name: '',
+        class: '',
+        avatar: '🐱'
+      };
+
+      let currentSlideIndex = 0;
+      let currentDiff = 'medium'; // Default Medium starting level
+      let gameQuestions = [];
+      let currentQuestionIdx = 0;
+      let score = 0;
+      let streak = 0;
+      let maxStreak = 0;
+      let timerInterval = null;
+      let timeLeft = 15;
+      let firstAttempt = true;
+      let correctCount = 0;
+      let commonMistakes = [];
+
+      /* ==========================================================================
+         3. LEARNING DECK DATA & RENDERER
+         ========================================================================== */
+      const deckSlides = [
+        {
+          title: "Welcome to Time Travel Verbs!",
+          subtitle: "What is a Verb?",
+          icon: "⏰",
+          content: `
+            <div class="space-y-4">
+              <p class="text-xl font-bold text-sky-900">A <span class="bg-yellow-200 px-2 py-1 rounded-lg">verb</span> is an action word! It tells us what someone is doing.</p>
+              <div class="flex justify-center gap-4 text-3xl py-2">
+                <span class="bg-sky-100 p-3 rounded-2xl animate-bounce">🏃 walk</span>
+                <span class="bg-pink-100 p-3 rounded-2xl animate-bounce" style="animation-delay: 0.2s">🏊 swim</span>
+                <span class="bg-emerald-100 p-3 rounded-2xl animate-bounce" style="animation-delay: 0.4s">😴 sleep</span>
+              </div>
+              <p class="text-md font-sans text-gray-600">When things happened <strong class="text-sky-700">yesterday</strong> or <strong class="text-sky-700">last time</strong>, we change the verb into the <strong>Past Tense</strong>!</p>
+            </div>
+          `
+        },
+        {
+          title: "Magic Rule 1: Add -ed",
+          subtitle: "Standard Past Tense Verbs",
+          icon: "✨",
+          content: `
+            <div class="space-y-4 max-w-lg">
+              <p class="text-lg font-bold text-sky-900">For most verbs, simply add <span class="bg-emerald-200 text-emerald-800 px-3 py-1 rounded-xl text-xl font-extrabold">-ed</span> at the back!</p>
+              
+              <!-- Interactive Machine Simulator -->
+              <div class="bg-gradient-to-r from-sky-100 to-indigo-100 border-2 border-sky-300 p-4 rounded-2xl shadow-inner text-center">
+                <p class="text-xs font-bold text-sky-600 uppercase mb-2">Try the Verb Transformer Machine:</p>
+                <div class="flex items-center justify-center gap-2 text-xl font-extrabold">
+                  <span id="slideRule1Present" class="bg-white px-3 py-1.5 rounded-xl border border-sky-200 text-sky-800">walk</span>
+                  <i class="fas fa-plus text-sky-400"></i>
+                  <span class="bg-emerald-300 text-emerald-900 px-2 py-1 rounded-lg">ed</span>
+                  <i class="fas fa-equals text-sky-400"></i>
+                  <span id="slideRule1Past" class="bg-emerald-100 text-emerald-800 px-3 py-1.5 rounded-xl border border-emerald-300">walked</span>
+                </div>
+                <div class="flex justify-center gap-2 mt-3">
+                  <button onclick="transformRule1('walk')" class="text-xs bg-white border border-sky-300 px-2.5 py-1 rounded-lg hover:bg-sky-50 font-bold">walk</button>
+                  <button onclick="transformRule1('play')" class="text-xs bg-white border border-sky-300 px-2.5 py-1 rounded-lg hover:bg-sky-50 font-bold">play</button>
+                  <button onclick="transformRule1('jump')" class="text-xs bg-white border border-sky-300 px-2.5 py-1 rounded-lg hover:bg-sky-50 font-bold">jump</button>
+                </div>
+              </div>
+            </div>
+          `
+        },
+        {
+          title: "Magic Rule 2: Verbs Ending in 'e'",
+          subtitle: "Just Add -d",
+          icon: "🅰️",
+          content: `
+            <div class="space-y-4 max-w-lg">
+              <p class="text-lg font-bold text-sky-900">If the verb ALREADY ends with an <span class="bg-pink-200 text-pink-800 px-2 py-1 rounded-lg font-extrabold">'e'</span>, do NOT double the e! Just add <span class="bg-pink-300 text-pink-900 px-3 py-1 rounded-xl text-xl font-extrabold">-d</span>!</p>
+              
+              <div class="grid grid-cols-2 gap-3 font-sans text-sm">
+                <div class="bg-pink-50 border-2 border-pink-200 p-3 rounded-2xl">
+                  <p class="font-bold text-pink-800 text-base">lik<span class="text-red-500 underline">e</span> ➡️ liked</p>
+                  <p class="text-xs text-gray-500">I liked the ice cream yesterday.</p>
+                </div>
+                <div class="bg-pink-50 border-2 border-pink-200 p-3 rounded-2xl">
+                  <p class="font-bold text-pink-800 text-base">danc<span class="text-red-500 underline">e</span> ➡️ danced</p>
+                  <p class="text-xs text-gray-500">Siti danced at the concert.</p>
+                </div>
+              </div>
+            </div>
+          `
+        },
+        {
+          title: "Magic Rule 3: Change 'y' to 'i' + -ed",
+          subtitle: "The Y-Swapping Trick",
+          icon: "🔄",
+          content: `
+            <div class="space-y-4 max-w-lg">
+              <p class="text-lg font-bold text-sky-900">If a verb ends in a consonant + <span class="bg-amber-200 text-amber-800 px-2 py-1 rounded-lg font-extrabold">'y'</span>, kick away 'y', change to <span class="bg-indigo-200 text-indigo-800 px-2 py-1 rounded-lg font-extrabold">'i'</span>, then add <span class="bg-emerald-200 text-emerald-800 px-2 py-1 rounded-lg font-extrabold">-ed</span>!</p>
+
+              <!-- Flip Cards -->
+              <div class="grid grid-cols-2 gap-4">
+                <div onclick="this.classList.toggle('flipped'); playSFX('flip');" class="card-flip cursor-pointer h-24">
+                  <div class="card-flip-inner relative w-full h-full shadow-md rounded-2xl border-2 border-amber-300 bg-amber-50 flex items-center justify-center p-2 text-center">
+                    <div class="card-front absolute font-extrabold text-amber-800 text-xl">cr<span class="text-red-500">y</span> (Tap to Flip)</div>
+                    <div class="card-back absolute font-extrabold text-emerald-800 text-xl bg-emerald-50 w-full h-full rounded-2xl flex items-center justify-center border-2 border-emerald-300">cr<span class="text-indigo-600 underline">i</span>ed</div>
+                  </div>
+                </div>
+
+                <div onclick="this.classList.toggle('flipped'); playSFX('flip');" class="card-flip cursor-pointer h-24">
+                  <div class="card-flip-inner relative w-full h-full shadow-md rounded-2xl border-2 border-amber-300 bg-amber-50 flex items-center justify-center p-2 text-center">
+                    <div class="card-front absolute font-extrabold text-amber-800 text-xl">tr<span class="text-red-500">y</span> (Tap to Flip)</div>
+                    <div class="card-back absolute font-extrabold text-emerald-800 text-xl bg-emerald-50 w-full h-full rounded-2xl flex items-center justify-center border-2 border-emerald-300">tr<span class="text-indigo-600 underline">i</span>ed</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          `
+        },
+        {
+          title: "Magic Rule 4: Double the Consonant (CVC)",
+          subtitle: "Short Vowel Power!",
+          icon: "⚡",
+          content: `
+            <div class="space-y-3 max-w-lg">
+              <p class="text-base font-bold text-sky-900">For short 1-syllable verbs (Consonant - Vowel - Consonant), double the last letter before adding -ed!</p>
+              
+              <div class="bg-purple-50 border-2 border-purple-200 p-3 rounded-2xl text-center space-y-2">
+                <p class="text-lg font-extrabold text-purple-900">sto<span class="text-red-500">p</span> ➡️ sto<span class="text-red-500 underline">pp</span>ed</p>
+                <p class="text-lg font-extrabold text-purple-900">cla<span class="text-red-500">p</span> ➡️ cla<span class="text-red-500 underline">pp</span>ed</p>
+                <p class="text-xs text-purple-700 font-sans">Notice how 'p' doubles to 'pp'!</p>
+              </div>
+            </div>
+          `
+        },
+        {
+          title: "Special Irregular Verbs!",
+          subtitle: "No '-ed' Rules Here!",
+          icon: "👑",
+          content: `
+            <div class="space-y-3 max-w-lg">
+              <p class="text-base font-bold text-sky-900">Some verbs change their whole spelling! They do NOT take '-ed':</p>
+              
+              <div class="grid grid-cols-3 gap-2 font-sans text-xs">
+                <div class="bg-amber-100 p-2 rounded-xl border border-amber-300 font-bold text-amber-900">go ➡️ <span class="text-emerald-700 text-sm block">went</span></div>
+                <div class="bg-amber-100 p-2 rounded-xl border border-amber-300 font-bold text-amber-900">eat ➡️ <span class="text-emerald-700 text-sm block">ate</span></div>
+                <div class="bg-amber-100 p-2 rounded-xl border border-amber-300 font-bold text-amber-900">see ➡️ <span class="text-emerald-700 text-sm block">saw</span></div>
+                <div class="bg-amber-100 p-2 rounded-xl border border-amber-300 font-bold text-amber-900">run ➡️ <span class="text-emerald-700 text-sm block">ran</span></div>
+                <div class="bg-amber-100 p-2 rounded-xl border border-amber-300 font-bold text-amber-900">sit ➡️ <span class="text-emerald-700 text-sm block">sat</span></div>
+                <div class="bg-amber-100 p-2 rounded-xl border border-amber-300 font-bold text-amber-900">is ➡️ <span class="text-emerald-700 text-sm block">was</span></div>
+              </div>
+            </div>
+          `
+        }
+      ];
+
+      function renderSlide() {
+        const slide = deckSlides[currentSlideIndex];
+        document.getElementById('slideIndicator').textContent = `Slide ${currentSlideIndex + 1} of ${deckSlides.length}`;
+
+        // Dots
+        const dotsContainer = document.getElementById('slideDots');
+        dotsContainer.innerHTML = deckSlides.map((_, i) => `
+          <div class="w-3 h-3 rounded-full ${i === currentSlideIndex ? 'bg-sky-500 scale-125' : 'bg-sky-200'} transition-all"></div>
+        `).join('');
+
+        const container = document.getElementById('slideContent');
+        container.innerHTML = `
+          <div class="animate-fadeIn space-y-2">
+            <div class="text-5xl mb-1">${slide.icon}</div>
+            <h3 class="text-2xl font-extrabold text-sky-800">${slide.title}</h3>
+            <p class="text-sm font-bold text-sky-600 font-sans uppercase tracking-wider">${slide.subtitle}</p>
+            <div class="mt-4 flex justify-center">${slide.content}</div>
+          </div>
+        `;
+
+        document.getElementById('prevSlideBtn').disabled = currentSlideIndex === 0;
+        document.getElementById('nextSlideBtn').textContent = currentSlideIndex === deckSlides.length - 1 ? 'Finish & Play 🎮' : 'Next ➡️';
+
+        speakCurrentSlide();
+      }
+
+      function transformRule1(verb) {
+        playSFX('click');
+        document.getElementById('slideRule1Present').textContent = verb;
+        document.getElementById('slideRule1Past').textContent = verb + 'ed';
+        speakTTS(`${verb} becomes ${verb}ed`);
+      }
+
+      function changeSlide(direction) {
+        playSFX('click');
+        currentSlideIndex += direction;
+        if (currentSlideIndex >= deckSlides.length) {
+          startPracticeGameFromDeck();
+          return;
+        }
+        if (currentSlideIndex < 0) currentSlideIndex = 0;
+        renderSlide();
+      }
+
+      function speakCurrentSlide() {
+        const slide = deckSlides[currentSlideIndex];
+        speakTTS(`${slide.title}. ${slide.subtitle}`);
+      }
+
+      /* ==========================================================================
+         4. QUESTION BANK (TIERED: 4 LEVELS, 10+ QUESTIONS EACH)
+         ========================================================================== */
+      const masterQuestionBank = {
+        easy: [
+          { p: "Yesterday, Ali _____ (play) football in the school field.", acceptedAnswers: ["played"], rule: "Standard -ed rule", hint: "Ali finished playing yesterday. Add '-ed' to play!" },
+          { p: "Siti _____ (walk) to school this morning.", acceptedAnswers: ["walked"], rule: "Standard -ed rule", hint: "It happened this morning! Add '-ed' to walk." },
+          { p: "The dog _____ (bark) loudly last night.", acceptedAnswers: ["barked"], rule: "Standard -ed rule", hint: "It happened last night! Add '-ed' to bark." },
+          { p: "We _____ (jump) on the playground yesterday.", acceptedAnswers: ["jumped"], rule: "Standard -ed rule", hint: "Past tense action: add '-ed' to jump!" },
+          { p: "The teacher _____ (look) at my drawing just now.", acceptedAnswers: ["looked"], rule: "Standard -ed rule", hint: "Just now means past tense! Add '-ed' to look." },
+          { p: "Bala _____ (open) the classroom door.", acceptedAnswers: ["opened"], rule: "Standard -ed rule", hint: "Open becomes opened in the past tense!" },
+          { p: "I _____ (wash) my hands before recess.", acceptedAnswers: ["washed"], rule: "Standard -ed rule", hint: "Finished washing! Add '-ed' to wash." },
+          { p: "They _____ (cook) fried rice last Sunday.", acceptedAnswers: ["cooked"], rule: "Standard -ed rule", hint: "Last Sunday is in the past! Add '-ed' to cook." },
+          { p: "Ahmad _____ (clean) his table after lunch.", acceptedAnswers: ["cleaned"], rule: "Standard -ed rule", hint: "Finished cleaning! Add '-ed' to clean." },
+          { p: "The cat _____ (climb) up the big tree.", acceptedAnswers: ["climbed"], rule: "Standard -ed rule", hint: "Climb becomes climbed in the past tense!" }
+        ],
+        medium: [
+          { p: "Mei Ling _____ (like) the storybook yesterday.", acceptedAnswers: ["liked"], rule: "Verbs ending in 'e' -> Add -d", hint: "'Like' already ends with 'e'. Just add 'd'!" },
+          { p: "We _____ (dance) during Music lesson last week.", acceptedAnswers: ["danced"], rule: "Verbs ending in 'e' -> Add -d", hint: "'Dance' already ends in 'e'. Just add 'd'!" },
+          { p: "The baby _____ (cry) because he was hungry.", acceptedAnswers: ["cried"], rule: "Change 'y' to 'i' + -ed", hint: "Kick away 'y', change to 'i' and add '-ed'!" },
+          { p: "Grandmother _____ (bake) a chocolate cake.", acceptedAnswers: ["baked"], rule: "Verbs ending in 'e' -> Add -d", hint: "'Bake' ends in 'e'! Just add 'd'." },
+          { p: "Devi _____ (try) her best during the game.", acceptedAnswers: ["tried"], rule: "Change 'y' to 'i' + -ed", hint: "Change 'y' to 'i' and add '-ed'!" },
+          { p: "The driver _____ (stop) the school bus at the gate.", acceptedAnswers: ["stopped"], rule: "Double Consonant CVC", hint: "'Stop' follows the CVC pattern! Double the 'p' before adding -ed." },
+          { p: "The pupils _____ (clap) happily after the song.", acceptedAnswers: ["clapped"], rule: "Double Consonant CVC", hint: "'Clap' follows the CVC pattern! Double the 'p' before adding -ed." },
+          { p: "Ahmad _____ (carry) his heavy school bag.", acceptedAnswers: ["carried"], rule: "Change 'y' to 'i' + -ed", hint: "Ends in 'y'! Change 'y' to 'i' + '-ed'." },
+          { p: "We _____ (smile) at our teacher this morning.", acceptedAnswers: ["smiled"], rule: "Verbs ending in 'e' -> Add -d", hint: "'Smile' already has 'e' at the end. Just add 'd'!" },
+          { p: "The boy _____ (hug) his teddy bear tightly.", acceptedAnswers: ["hugged"], rule: "Double Consonant CVC", hint: "'Hug' follows the CVC pattern! Double the 'g' before adding -ed." }
+        ],
+        hard: [
+          { p: "Yesterday, Siti _____ (go) to the library.", acceptedAnswers: ["went"], rule: "Irregular Verbs", hint: "'Go' is an irregular verb! Think about how 'go' changes in the past tense." },
+          { p: "We _____ (eat) chicken rice for lunch just now.", acceptedAnswers: ["ate"], rule: "Irregular Verbs", hint: "'Eat' is an irregular verb! It changes completely in the past tense." },
+          { p: "John _____ (see) a colorful bird in the garden.", acceptedAnswers: ["saw"], rule: "Irregular Verbs", hint: "'See' is an irregular verb! Think about what you saw." },
+          { p: "The pupils _____ (run) fast during the race.", acceptedAnswers: ["ran"], rule: "Irregular Verbs", hint: "'Run' is an irregular verb!" },
+          { p: "My mother _____ (buy) a new pencil case for me.", acceptedAnswers: ["bought"], rule: "Irregular Verbs", hint: "'Buy' is an irregular verb!" },
+          { p: "The little girl _____ (sit) quietly on the bench.", acceptedAnswers: ["sat"], rule: "Irregular Verbs", hint: "'Sit' is an irregular verb!" },
+          { p: "Mr Tan _____ (teach) us English last year.", acceptedAnswers: ["taught"], rule: "Irregular Verbs", hint: "'Teach' is an irregular verb!" },
+          { p: "I _____ (make) my bed before going to school.", acceptedAnswers: ["made"], rule: "Irregular Verbs", hint: "'Make' is an irregular verb!" },
+          { p: "The bird _____ (fly) high up into the sky.", acceptedAnswers: ["flew"], rule: "Irregular Verbs", hint: "'Fly' is an irregular verb!" },
+          { p: "Bala _____ (write) a nice thank-you card.", acceptedAnswers: ["wrote"], rule: "Irregular Verbs", hint: "'Write' is an irregular verb!" }
+        ],
+        challenge: [
+          { p: "Yesterday, Ben _____ (hop) across the puddle.", acceptedAnswers: ["hopped"], rule: "Double CVC", hint: "'Hop' follows the CVC pattern! Double the 'p' before adding -ed." },
+          { p: "Siti _____ (study) hard and got full marks!", acceptedAnswers: ["studied"], rule: "Change 'y' to 'i' + -ed", hint: "Change 'y' to 'i' and add '-ed'!" },
+          { p: "Last night, the boy _____ (lose) his eraser.", acceptedAnswers: ["lost"], rule: "Irregular Verbs", hint: "'Lose' is an irregular verb!" },
+          { p: "We _____ (think) the story was funny.", acceptedAnswers: ["thought"], rule: "Irregular Verbs", hint: "'Think' is an irregular verb!" },
+          { p: "The chef _____ (fry) the fish for dinner.", acceptedAnswers: ["fried"], rule: "Change 'y' to 'i' + -ed", hint: "Change 'y' to 'i' and add '-ed'!" },
+          { p: "They _____ (plan) a fun party.", acceptedAnswers: ["planned"], rule: "Double CVC", hint: "'Plan' follows the CVC pattern! Double the 'n' before adding -ed." },
+          { p: "The puppy _____ (wag) its tail happily.", acceptedAnswers: ["wagged"], rule: "Double CVC", hint: "'Wag' follows the CVC pattern! Double the 'g' before adding -ed." },
+          { p: "She _____ (tidy) her bedroom this morning.", acceptedAnswers: ["tidied"], rule: "Change 'y' to 'i' + -ed", hint: "Change 'y' to 'i' and add '-ed'!" },
+          { p: "The rain _____ (stop) so we went out.", acceptedAnswers: ["stopped"], rule: "Double CVC", hint: "'Stop' follows the CVC pattern! Double the 'p' before adding -ed." },
+          { p: "I _____ (find) a 20-cent coin on the floor.", acceptedAnswers: ["found"], rule: "Irregular Verbs", hint: "'Find' is an irregular verb!" }
+        ]
+      };
+
+      /* ==========================================================================
+         5. NAVIGATION & GAME LOGIC
+         ========================================================================== */
+      function selectAvatar(emoji) {
+        currentUser.avatar = emoji;
+        document.querySelectorAll('.avatar-opt').forEach(btn => {
+          btn.classList.remove('border-sky-500', 'bg-sky-200');
+          if (btn.textContent.includes(emoji)) {
+            btn.classList.add('border-sky-500', 'bg-sky-200');
+          }
+        });
+      }
+
+      function handleLogin(e) {
+        e.preventDefault();
+        playSFX('click');
+        currentUser.name = document.getElementById('studentName').value.trim();
+        currentUser.class = document.getElementById('studentClass').value.trim();
+
+        document.getElementById('welcomeUserGreeting').textContent = `Hello, ${currentUser.avatar} ${currentUser.name} (${currentUser.class})!`;
+
+        showModeSelect();
+      }
+
+      function hideAllScreens() {
+        document.getElementById('loginScreen').classList.add('hidden');
+        document.getElementById('modeSelectScreen').classList.add('hidden');
+        document.getElementById('learningDeckScreen').classList.add('hidden');
+        document.getElementById('gameScreen').classList.add('hidden');
+        document.getElementById('resultScreen').classList.add('hidden');
+        document.getElementById('diffSwitchContainer').classList.add('hidden');
+      }
+
+      function showModeSelect() {
+        hideAllScreens();
+        document.getElementById('modeSelectScreen').classList.remove('hidden');
+      }
+
+      function startLearningDeck() {
+        playSFX('click');
+        hideAllScreens();
+        document.getElementById('learningDeckScreen').classList.remove('hidden');
+        currentSlideIndex = 0;
+        renderSlide();
+      }
+
+      function startPracticeGameFromDeck() {
+        startPracticeGame();
+      }
+
+      function startPracticeGame() {
+        playSFX('click');
+        hideAllScreens();
+        document.getElementById('gameScreen').classList.remove('hidden');
+        document.getElementById('diffSwitchContainer').classList.remove('hidden');
+
+        // Reset statistics
+        score = 0;
+        streak = 0;
+        maxStreak = 0;
+        correctCount = 0;
+        commonMistakes = [];
+        currentQuestionIdx = 0;
+
+        document.getElementById('gameDiffSelect').value = currentDiff;
+        loadQuestionsForLevel(currentDiff);
+        renderQuestion();
+      }
+
+      function switchDifficultyMidGame(newLevel) {
+        playSFX('click');
+        currentDiff = newLevel;
+        currentQuestionIdx = 0;
+        loadQuestionsForLevel(newLevel);
+        renderQuestion();
+        speakTTS(`Switched to ${newLevel} level.`);
+      }
+
+      function loadQuestionsForLevel(level) {
+        const rawBank = masterQuestionBank[level] || masterQuestionBank.medium;
+        gameQuestions = rawBank.map(q => ({ ...q }));
+
+        // Shuffle question list order
+        for (let i = gameQuestions.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [gameQuestions[i], gameQuestions[j]] = [gameQuestions[j], gameQuestions[i]];
+        }
+      }
+
+      function renderQuestion() {
+        if (currentQuestionIdx >= gameQuestions.length) {
+          finishGame();
+          return;
+        }
+
+        firstAttempt = true;
+        const q = gameQuestions[currentQuestionIdx];
+
+        // Update HUD
+        document.getElementById('qCurrent').textContent = currentQuestionIdx + 1;
+        document.getElementById('qTotal').textContent = gameQuestions.length;
+        document.getElementById('gameScore').textContent = score;
+        document.getElementById('gameStreak').textContent = streak;
+        document.getElementById('qRuleTag').textContent = q.rule;
+
+        // Prompt
+        document.getElementById('questionPrompt').textContent = q.p;
+
+        // Clear input box and enable it
+        const inputField = document.getElementById('typedAnswerInput');
+        if (inputField) {
+          inputField.value = '';
+          inputField.disabled = false;
+          inputField.className = "w-full text-center text-2xl md:text-3xl font-extrabold tracking-wide py-3 px-4 rounded-2xl border-4 border-indigo-300 focus:border-indigo-500 focus:outline-none shadow-inner bg-indigo-50/50 text-indigo-900 placeholder:text-indigo-300 placeholder:font-normal placeholder:text-lg";
+          setTimeout(() => inputField.focus(), 100);
+        }
+
+        const submitBtn = document.getElementById('submitAnswerBtn');
+        if (submitBtn) submitBtn.disabled = false;
+
+        // Feedback Reset
+        const socratic = document.getElementById('socraticFeedback');
+        socratic.classList.add('hidden');
+
+        // Reset & Start Timer
+        resetTimer();
+
+        // Speak question if TTS enabled
+        speakQuestion();
+      }
+
+      function appendSuffix(suffix) {
+        playSFX('click');
+        const inputField = document.getElementById('typedAnswerInput');
+        if (inputField && !inputField.disabled) {
+          inputField.value += suffix;
+          inputField.focus();
+        }
+      }
+
+      function handleTypedAnswerSubmit(e) {
+        if (e) e.preventDefault();
+        const inputField = document.getElementById('typedAnswerInput');
+        if (!inputField || inputField.disabled) return;
+
+        const userTyped = inputField.value.trim().toLowerCase();
+        if (!userTyped) return;
+
+        checkTypedAnswer(userTyped);
+      }
+
+      function checkTypedAnswer(userTyped) {
+        clearInterval(timerInterval);
+        const q = gameQuestions[currentQuestionIdx];
+
+        // Check if typed answer matches any accepted answer
+        const isCorrect = q.acceptedAnswers.some(ans => ans.toLowerCase() === userTyped);
+        const inputField = document.getElementById('typedAnswerInput');
+        const submitBtn = document.getElementById('submitAnswerBtn');
+
+        if (isCorrect) {
+          // CORRECT ANSWER
+          playSFX('correct');
+          correctCount++;
+          streak++;
+          if (streak > maxStreak) maxStreak = streak;
+
+          // Gamified Scoring Rules
+          let basePoints = currentDiff === 'easy' ? 100 : currentDiff === 'medium' ? 150 : currentDiff === 'hard' ? 200 : 250;
+          let bonus = firstAttempt ? 50 : 10;
+          let streakBonus = streak * 20;
+          let earned = basePoints + bonus + streakBonus;
+
+          score += earned;
+          document.getElementById('gameScore').textContent = score;
+          document.getElementById('gameStreak').textContent = streak;
+
+          if (inputField) {
+            inputField.disabled = true;
+            inputField.className = "w-full text-center text-2xl md:text-3xl font-extrabold tracking-wide py-3 px-4 rounded-2xl border-4 border-emerald-500 bg-emerald-100 text-emerald-900 shadow-inner";
+          }
+          if (submitBtn) submitBtn.disabled = true;
+
+          speakTTS("Great job! That is correct!");
+
+          setTimeout(() => {
+            currentQuestionIdx++;
+            renderQuestion();
+          }, 1200);
+
+        } else {
+          // INCORRECT ANSWER - SPECIFIC SOCRATIC HINT FOR YOUNG LEARNERS
+          playSFX('wrong');
+          streak = 0;
+          document.getElementById('gameStreak').textContent = streak;
+
+          commonMistakes.push({ question: q.p, rule: q.rule, studentMistake: userTyped });
+
+          if (inputField) {
+            inputField.className = "w-full text-center text-2xl md:text-3xl font-extrabold tracking-wide py-3 px-4 rounded-2xl border-4 border-red-400 bg-red-50 text-red-700 shadow-inner animate-shake";
+          }
+
+          firstAttempt = false;
+
+          // Provide specific, clear hint customized to the question without giving the direct answer away
+          const clearHintMsg = `Try again! 💡 Hint: ${q.hint}`;
+          showSocraticHint(clearHintMsg);
+          speakTTS(`Not quite. Try again! ${q.hint}`);
+
+          // Restart timer for retry
+          resetTimer();
+        }
+      }
+
+      function speakQuestion() {
+        const q = gameQuestions[currentQuestionIdx];
+        speakTTS(q.p);
+      }
+
+      function showSocraticHint(msg) {
+        const socratic = document.getElementById('socraticFeedback');
+        if (socratic) {
+          socratic.textContent = msg;
+          socratic.className = "p-4 rounded-2xl border-2 border-amber-300 bg-amber-50 text-amber-900 font-sans text-sm animate-bounce mt-4";
+          socratic.classList.remove('hidden');
+        }
+      }
+
+      function resetTimer() {
+        clearInterval(timerInterval);
+        timeLeft = 15;
+        const bar = document.getElementById('timerBar');
+        if (bar) bar.style.width = '100%';
+
+        timerInterval = setInterval(() => {
+          timeLeft--;
+          if (bar) bar.style.width = `${(timeLeft / 15) * 100}%`;
+          if (timeLeft <= 0) {
+            clearInterval(timerInterval);
+            speakTTS("Time's up! Try typing your answer!");
+          }
+        }, 1000);
+      }
+
+      function finishGame() {
+        clearInterval(timerInterval);
+        hideAllScreens();
+        document.getElementById('resultScreen').classList.remove('hidden');
+
+        const totalQuestions = gameQuestions.length;
+        const accuracyPct = Math.round((correctCount / totalQuestions) * 100) || 0;
+
+        document.getElementById('resScore').textContent = score;
+        document.getElementById('resStreak').textContent = maxStreak;
+        document.getElementById('resAccuracy').textContent = `${accuracyPct}%`;
+
+        // Speak final message
+        speakTTS(`Awesome work! You earned ${score} stars with ${accuracyPct}% accuracy!`);
+
+        // Post results to Google Sheets backend if configured
+        postGameDataToSheets(accuracyPct);
+      }
+
+      function replayGame() {
+        startPracticeGame();
+      }
+
+      function postGameDataToSheets(accuracyPct) {
+        if (!GOOGLE_APPS_SCRIPT_URL) return;
+
+        const mistakeSummary = commonMistakes.map(m => m.rule).join(', ') || 'None';
+
+        const payload = {
+          studentName: currentUser.name || "Student",
+          studentClass: currentUser.class || "P1",
+          score: score,
+          level: currentDiff,
+          accuracy: accuracyPct,
+          mistakes: mistakeSummary
+        };
+
+        fetch(GOOGLE_APPS_SCRIPT_URL, {
+          method: 'POST',
+          mode: 'no-cors',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        }).catch(err => console.log("Logging error:", err));
+      }
+
+      function showLeaderboardModal() {
+        playSFX('click');
+        const modal = document.getElementById('leaderboardModal');
+        modal.classList.remove('hidden');
+        fetchLeaderboard();
+      }
+
+      function closeLeaderboardModal() {
+        playSFX('click');
+        document.getElementById('leaderboardModal').classList.add('hidden');
+      }
+
+      function fetchLeaderboard() {
+        const list = document.getElementById('leaderboardList');
+        if (!GOOGLE_APPS_SCRIPT_URL) {
+          list.innerHTML = `
+            <div class="text-center py-6 text-slate-500 font-sans text-xs">
+              <p class="font-bold text-amber-600 mb-1">📢 Teacher Setup Required</p>
+              <p>Paste your Google Apps Script URL in <code class="bg-slate-100 px-1 py-0.5 rounded">index.html</code> to view live class rankings!</p>
+            </div>
+          `;
+          return;
+        }
+
+        fetch(GOOGLE_APPS_SCRIPT_URL)
+          .then(res => res.json())
+          .then(data => {
+            if (data.status === 'success' && data.leaderboard) {
+              if (data.leaderboard.length === 0) {
+                list.innerHTML = `<p class="text-center py-6 text-slate-400 font-sans text-xs">No scores logged yet. Be the first!</p>`;
+                return;
+              }
+
+              list.innerHTML = data.leaderboard.map((item, idx) => `
+                <div class="flex items-center justify-between p-3 rounded-xl ${idx === 0 ? 'bg-amber-50 border-2 border-amber-300' : 'bg-slate-50 border border-slate-200'}">
+                  <div class="flex items-center gap-3">
+                    <span class="w-7 h-7 rounded-full ${idx === 0 ? 'bg-amber-400 text-white' : 'bg-slate-200 text-slate-700'} font-black text-sm flex items-center justify-center">
+                      ${idx + 1}
+                    </span>
+                    <div>
+                      <p class="font-bold text-sm text-slate-800">${item.name}</p>
+                      <p class="text-xs text-slate-500 font-sans">${item.class}</p>
+                    </div>
+                  </div>
+                  <span class="font-black text-indigo-600 text-base">${item.score} ⭐</span>
+                </div>
+              `).join('');
+            }
+          })
+          .catch(err => {
+            console.error(err);
+            list.innerHTML = `<p class="text-center py-6 text-rose-500 font-sans text-xs">Could not load star board right now.</p>`;
+          });
+      }
+    </script>
+</body>
+</html>
